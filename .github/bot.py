@@ -1,4 +1,4 @@
-from telethon import TelegramClient, sessions
+from telethon import TelegramClient
 import asyncio
 import os
 import sys
@@ -8,17 +8,17 @@ API_ID = os.environ.get("API_ID")
 API_HASH = os.environ.get("API_HASH")
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 CHAT_ID = int(os.environ.get("CHAT_ID"))
-BOT_CI_SESSION = os.environ.get("BOT_CI_SESSION")
 
 async def send_telegram_files(files):
     """
     Connects to Telegram and sends the specified files as a group message.
     """
-    session = sessions.StringSession(BOT_CI_SESSION)
 
-    async with TelegramClient(session, api_id=API_ID, api_hash=API_HASH) as client:
-        # Start the client with the bot token
-        await client.start(bot_token=BOT_TOKEN)
+    client = TelegramClient('bot_session', api_id=int(API_ID), api_hash=API_HASH)
+
+    await client.start(bot_token=BOT_TOKEN)
+
+    try:
 
         print("[+] Sending files as a group...")
         # Send the files together as an album/group
@@ -27,6 +27,8 @@ async def send_telegram_files(files):
             file=files,
         )
         print("[+] Files sent successfully.")
+    finally:
+        await client.disconnect()
 
 
 if __name__ == '__main__':
